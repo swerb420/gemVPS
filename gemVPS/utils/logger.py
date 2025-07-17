@@ -4,7 +4,8 @@ import sys
 from logging.handlers import RotatingFileHandler
 from typing import Optional
 
-# Define a custom formatter to add color to log levels for better readability in the console
+
+# Define a custom formatter to add color to log levels in the console
 class ColorFormatter(logging.Formatter):
     """A custom log formatter that adds color to log levels."""
     GREY = "\x1b[38;20m"
@@ -12,14 +13,34 @@ class ColorFormatter(logging.Formatter):
     RED = "\x1b[31;20m"
     BOLD_RED = "\x1b[31;1m"
     RESET = "\x1b[0m"
-    
+
     # Define the format for each log level
     FORMATS = {
-        logging.DEBUG: GREY + "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s" + RESET,
-        logging.INFO: "\x1b[32;20m" + "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s" + RESET, # Green for Info
-        logging.WARNING: YELLOW + "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s" + RESET,
-        logging.ERROR: RED + "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s" + RESET,
-        logging.CRITICAL: BOLD_RED + "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s" + RESET,
+        logging.DEBUG: (
+            GREY
+            + "%(asctime)s - %(name)s - [%(levelname)s] - "
+            + "%(message)s" + RESET
+        ),
+        logging.INFO: (
+            "\x1b[32;20m"
+            + "%(asctime)s - %(name)s - [%(levelname)s] - "
+            + "%(message)s" + RESET
+        ),  # Green for Info
+        logging.WARNING: (
+            YELLOW
+            + "%(asctime)s - %(name)s - [%(levelname)s] - "
+            + "%(message)s" + RESET
+        ),
+        logging.ERROR: (
+            RED
+            + "%(asctime)s - %(name)s - [%(levelname)s] - "
+            + "%(message)s" + RESET
+        ),
+        logging.CRITICAL: (
+            BOLD_RED
+            + "%(asctime)s - %(name)s - [%(levelname)s] - "
+            + "%(message)s" + RESET
+        ),
     }
 
     def format(self, record):
@@ -27,8 +48,10 @@ class ColorFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt, '%Y-%m-%d %H:%M:%S')
         return formatter.format(record)
 
+
 # A dictionary to cache loggers so we don't reconfigure them.
 _loggers = {}
+
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
     """
@@ -36,7 +59,8 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
     It sets up both a colored console handler and a rotating file handler.
 
     Args:
-        name (Optional[str]): The name for the logger, typically __name__ from the calling module.
+        name (Optional[str]): The name for the logger, typically ``__name__``
+            from the calling module.
 
     Returns:
         logging.Logger: A configured logger instance.
@@ -47,19 +71,20 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
     # Use the root logger if no name is provided
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
-    logger.propagate = False  # Prevent log messages from being duplicated by the root logger
+    # Prevent log messages from being duplicated by the root logger
+    logger.propagate = False
 
     # --- Console Handler ---
     # Use the custom color formatter for console output.
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(ColorFormatter())
-    
+
     # --- File Handler ---
-    # Create a rotating file handler to prevent log files from growing indefinitely.
-    # This will create up to 5 backup files of 5MB each.
+    # Create a rotating file handler to prevent log files from growing
+    # indefinitely. This will create up to 5 backup files of 5MB each.
     file_handler = RotatingFileHandler(
-        'logs/app.log', 
-        maxBytes=5*1024*1024, # 5 MB
+        'logs/app.log',
+        maxBytes=5*1024*1024,  # 5 MB
         backupCount=5
     )
     file_formatter = logging.Formatter(
@@ -75,6 +100,7 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
 
     _loggers[name] = logger
     return logger
+
 
 # It's good practice to ensure the log directory exists at startup.
 # This can be called once from main.py.
