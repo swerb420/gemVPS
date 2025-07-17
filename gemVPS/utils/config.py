@@ -14,6 +14,7 @@ class Settings(BaseModel):
     TELEGRAM_CHAT_ID: str
     WEB3_PROVIDER_URL: HttpUrl
     ALCHEMY_WEBSOCKET_URL: str # Websocket URLs are not yet supported in Pydantic's HttpUrl
+    POLYGON_RPC_URL: Optional[HttpUrl] = None
     SHYFT_API_KEY: SecretStr
     EXCHANGE_API_KEY: SecretStr
     EXCHANGE_SECRET_KEY: SecretStr
