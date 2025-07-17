@@ -37,8 +37,19 @@ class TradeExecutor:
     def _initialize_exchange(self):
         """Initializes the CCXT exchange instance. Required for both live price data and live trading."""
         try:
+            api_key = None
+            secret_key = None
+            if self.trade_mode == 'live':
+                api_key = getattr(self.config, "EXCHANGE_API_KEY", None)
+                secret_key = getattr(self.config, "EXCHANGE_SECRET_KEY", None)
+                if not api_key or not secret_key:
+                    logger.warning(
+                        "Exchange API credentials missing; disabling live trading and skipping exchange initialization."
+                    )
+                    self.is_enabled = False
+                    return
+
             exchange_class = getattr(ccxt, 'binance')
-            # For paper trading, we don't need real keys, but CCXT might require placeholders.
             # For live trading, validate that keys are provided before proceeding.
             if self.trade_mode == 'live':
                 api_key = self.config.EXCHANGE_API_KEY.get_secret_value().strip()
