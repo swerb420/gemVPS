@@ -50,13 +50,19 @@ class TradeExecutor:
                     return
 
             exchange_class = getattr(ccxt, 'binance')
-            # For paper trading, we don't need real keys, but CCXT might require placeholders.
-            # For live trading, these must be loaded securely from config.
-            api_keys = {
-                'apiKey': api_key.get_secret_value() if self.trade_mode == 'live' else 'PAPER_KEY',
-                'secret': secret_key.get_secret_value() if self.trade_mode == 'live' else 'PAPER_SECRET',
-            }
-
+            # For live trading, validate that keys are provided before proceeding.
+            if self.trade_mode == 'live':
+                api_key = self.config.EXCHANGE_API_KEY.get_secret_value().strip()
+                secret_key = self.config.EXCHANGE_SECRET_KEY.get_secret_value().strip()
+                if not api_key or not secret_key:
+                    logger.warning(
+                        "Exchange API keys are not configured. Disabling trading module."
+                    )
+                    self.is_enabled = False
+                    return
+                api_keys = {'apiKey': api_key, 'secret': secret_key}
+            else:
+                api_keys = {'apiKey': 'PAPER_KEY', 'secret': 'PAPER_SECRET'}
             self.exchange = exchange_class({
                 **api_keys,
                 'options': {'defaultType': 'future'},

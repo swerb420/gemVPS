@@ -45,9 +45,18 @@ class GasAnalyzer:
     def _initialize_web3_instances(self):
         """Initializes Web3 instances for all chains defined in the config."""
         for chain, params in GAS_MONITOR_CONFIG.items():
-            # Get the RPC URL from the main config object, using the key from our local config
+            # Get the RPC URL from the main config object.
             rpc_url_key = params["rpc_url"]
-            rpc_url = getattr(self.config, rpc_url_key, None)
+
+            if chain == "polygon":
+                rpc_url = getattr(self.config, "POLYGON_RPC_URL", None)
+                if not rpc_url:
+                    logger.warning(
+                        "POLYGON_RPC_URL not provided. Polygon monitoring will be disabled."
+                    )
+                    continue
+            else:
+                rpc_url = getattr(self.config, rpc_url_key, None)
             
             if rpc_url:
                 try:
