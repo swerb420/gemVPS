@@ -40,7 +40,7 @@ async def main(config: Settings):
         # Each module is instantiated with the components it needs to interact with.
         modules = {
             "whale_watcher": AdvancedWhaleWatcher(config, db_manager, signal_aggregator, telegram_bot),
-            "vc_watcher": VCWatcher(config, signal_aggregator, db_manager),
+            "vc_watcher": VCWatcher(config, signal_aggregator),
             "gas_analyzer": GasAnalyzer(config, signal_aggregator),
             "cex_scanner": CEXListingScanner(config, signal_aggregator),
             "stablecoin_monitor": StablecoinMonitor(config, signal_aggregator),
