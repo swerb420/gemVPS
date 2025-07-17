@@ -34,10 +34,9 @@ async def verify_webhook_secret(
     x_shyft_webhook_secret: Optional[str] = Header(None), 
     config: Settings = Depends(get_app_config)
 ):
-    # This feature is disabled if no secret is set in the .env file.
-    # Replace 'YOUR_SHYFT_WEBHOOK_SECRET' with the actual secret from Shyft dashboard.
-    expected_secret = "YOUR_SHYFT_WEBHOOK_SECRET" 
-    if expected_secret != "YOUR_SHYFT_WEBHOOK_SECRET": # Check if a secret is configured
+    # This feature is disabled if no secret is provided in the configuration.
+    expected_secret = config.SHYFT_WEBHOOK_SECRET.get_secret_value().strip()
+    if expected_secret:
         if x_shyft_webhook_secret is None:
             logger.warning("Missing X-Shyft-Webhook-Secret header.")
             raise HTTPException(status_code=400, detail="Missing webhook secret header")

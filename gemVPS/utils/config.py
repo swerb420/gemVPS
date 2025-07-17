@@ -15,6 +15,10 @@ class Settings(BaseModel):
     WEB3_PROVIDER_URL: HttpUrl
     ALCHEMY_WEBSOCKET_URL: str # Websocket URLs are not yet supported in Pydantic's HttpUrl
     SHYFT_API_KEY: SecretStr
+    EXCHANGE_API_KEY: SecretStr
+    EXCHANGE_SECRET_KEY: SecretStr
+    SHYFT_WEBHOOK_SECRET: SecretStr
+    POLYGON_RPC_URL: HttpUrl | str
     NEWS_API_KEY: Optional[SecretStr] = None
     SANTIMENT_API_KEY: Optional[SecretStr] = None
 
