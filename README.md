@@ -22,3 +22,4 @@ GemVPS is an experimental cryptocurrency trading bot built around a collection o
 ## VPS considerations
 
 The bot can run on a 2 vCPU/2 GB instance but resource intensive modules (like correlation analysis or weight optimisation) may need to be scheduled less frequently or disabled when memory is limited.
+
