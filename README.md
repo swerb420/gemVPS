@@ -19,6 +19,22 @@ GemVPS is an experimental cryptocurrency trading bot built around a collection o
    python src/main.py
    ```
 
+## Running
+
+When running the bot or related utilities directly, ensure that Python can locate
+the project's modules. Either set the `PYTHONPATH` environment variable to the
+repository root:
+
+```bash
+PYTHONPATH=$(pwd) python src/main.py
+```
+
+or invoke the module using `python -m` from the repository root:
+
+```bash
+python -m gemVPS.src.main
+```
+
 ## Environment variables
 
 Copy `.env.example` to `.env` and populate the following variables:
