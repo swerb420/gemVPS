@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+python-dotenv
+pydantic
+python-telegram-bot
+ccxt
+websockets
+aiohttp
+asyncpg
+web3
+pandas
+numpy
+beautifulsoup4
+statsmodels
+pykalman
+scikit-learn
+Pillow
