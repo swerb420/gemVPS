@@ -15,6 +15,9 @@ class AdvancedSignalAggregator:
     The central hub for all trading signals. This class receives raw signals
     from various modules, processes them through a multi-stage pipeline,
     and generates a final, high-conviction composite signal.
+
+    The aggregator maintains signal weighting both globally and per market
+    regime to allow the meta-learning engine to adapt to changing conditions.
     """
     def __init__(self, config: Settings, db: DBManager, redis_client: Any):
         self.config = config
@@ -22,8 +25,8 @@ class AdvancedSignalAggregator:
         self.redis = redis_client
         self.signal_queue = asyncio.Queue()
 
-        # Default weights for each signal source. These will be dynamically
-        # updated by the WeightOptimizer module.
+        # Default weights for each signal source. These may be overridden
+        # dynamically by the WeightOptimizer module.
         self.signal_weights = defaultdict(lambda: 0.1, {
             "WHALE_TRADE": 0.25,
             "CEX_LISTING_ARBITRAGE": 1.0, # Max weight, acts as an override
@@ -34,6 +37,11 @@ class AdvancedSignalAggregator:
             "GAS_PRICE_ANOMALY": 0.05,
             # ... other signal types
         })
+
+        # Optional mapping of market regime -> weights. Each regime holds its
+        # own weight dictionary keyed by signal type. This is populated via
+        # `update_regime_weights` when the meta-learning optimizer runs.
+        self.regime_signal_weights: Dict[str, Dict[str, float]] = {}
 
         # A buffer to hold recent signals for confirmation logic
         self.recent_signals_buffer = defaultdict(list)
@@ -66,10 +74,31 @@ class AdvancedSignalAggregator:
 
     def update_weights(self, new_weights: Dict[str, float]):
         """
-        Allows the WeightOptimizer module to update the signal weights dynamically.
+        Allows the WeightOptimizer module to update the global signal weights
+        dynamically. Kept for backward compatibility. Prefer using
+        :meth:`update_regime_weights` when supplying regime-specific values.
         """
         logger.info(f"Dynamically updating signal weights. New weights: {new_weights}")
         self.signal_weights.update(new_weights)
+
+    def update_regime_weights(self, regime_weights: Dict[str, Dict[str, float]]):
+        """Update internal weight mappings for specific market regimes.
+
+        Args:
+            regime_weights: A mapping of ``regime`` -> ``{signal_type: weight}``.
+
+        Each regime will have its own weight dictionary. If a regime entry does
+        not yet exist it will be created. Existing weights for a regime are
+        updated in-place.
+        """
+        logger.info(
+            "Updating regime specific signal weights for %d regimes.",
+            len(regime_weights),
+        )
+        for regime, weights in regime_weights.items():
+            if regime not in self.regime_signal_weights:
+                self.regime_signal_weights[regime] = defaultdict(lambda: 0.1)
+            self.regime_signal_weights[regime].update(weights)
 
     async def _process_signal(self, signal: Dict[str, Any]):
         """
