@@ -43,8 +43,8 @@ class DBManager:
                     database=config.POSTGRES_DB,
                     host=config.POSTGRES_HOST,
                     port=config.POSTGRES_PORT,
-                    min_size=5,   # Maintain a minimum of 5 open connections
-                    max_size=20   # Allow up to 20 connections under load
+                    min_size=config.DB_POOL_MIN_SIZE,
+                    max_size=config.DB_POOL_MAX_SIZE
                 )
                 logger.info("✅ Database connection pool established successfully.")
                 await cls._initialize_db_schema(cls._pool)

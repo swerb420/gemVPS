@@ -27,6 +27,9 @@ class Settings(BaseModel):
     POSTGRES_DB: str = Field("trading_data", description="Default PostgreSQL database name")
     POSTGRES_HOST: str = Field("database", description="The service name from docker-compose")
     POSTGRES_PORT: int = Field(5432, description="Default PostgreSQL port")
+
+    DB_POOL_MIN_SIZE: int = Field(1, description="Minimum number of connections in the asyncpg pool")
+    DB_POOL_MAX_SIZE: int = Field(5, description="Maximum number of connections in the asyncpg pool")
     
     REDIS_HOST: str = Field("cache", description="The service name from docker-compose")
     REDIS_PORT: int = Field(6379, description="Default Redis port")
