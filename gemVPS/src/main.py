@@ -1,7 +1,7 @@
 # src/main.py
 import asyncio
 import sys
-from utils.logger import get_logger
+from utils.logger import setup_logging_directory, get_logger
 from utils.config import load_config, Settings
 from database.db_manager import DBManager
 from api.server import run_api_server
@@ -17,6 +17,8 @@ from market_data.stablecoin_monitor import StablecoinMonitor
 from analysis.narrative_tracker import NarrativeTracker
 from analysis.weight_optimizer import WeightOptimizer
 
+# Ensure the logs directory exists before any loggers are created
+setup_logging_directory()
 logger = get_logger(__name__)
 
 async def main(config: Settings):
