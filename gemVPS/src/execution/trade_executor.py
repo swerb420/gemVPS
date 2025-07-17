@@ -72,7 +72,8 @@ class TradeExecutor:
             
             try:
                 # 1. Fetch live price to make the simulation realistic
-                price = await self.exchange.fetch_ticker(market_symbol)['last']
+                ticker = await self.exchange.fetch_ticker(market_symbol)
+                price = ticker.get("last")
                 if not price:
                     logger.error(f"[PAPER TRADE] Could not fetch live price for {market_symbol}. Aborting.")
                     return
