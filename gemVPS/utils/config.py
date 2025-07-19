@@ -1,6 +1,7 @@
 # src/utils/config.py
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, HttpUrl, SecretStr
+from pydantic import ConfigDict
 from typing import Optional
 
 
@@ -21,7 +22,6 @@ class Settings(BaseModel):
     EXCHANGE_API_KEY: SecretStr
     EXCHANGE_SECRET_KEY: SecretStr
     SHYFT_WEBHOOK_SECRET: SecretStr
-    POLYGON_RPC_URL: HttpUrl | str
     NEWS_API_KEY: Optional[SecretStr] = None
     SANTIMENT_API_KEY: Optional[SecretStr] = None
 
@@ -55,15 +55,15 @@ class Settings(BaseModel):
 
     # --- VPS RESOURCE TUNING ---
     POSTGRES_SHARED_BUFFERS: str = Field(
-        "256MB",
+        "2GB",
         description="Memory for shared database buffers",
     )
     POSTGRES_WORK_MEM: str = Field(
-        "4MB",
+        "64MB",
         description="Memory for internal sort operations",
     )
     POSTGRES_MAX_CONNECTIONS: int = Field(
-        30,
+        100,
         description="Max concurrent database connections",
     )
 
@@ -79,17 +79,11 @@ class Settings(BaseModel):
         description="Number of crypto-correlated stocks to track",
     )
 
-    class Config:
-        """
-        Pydantic configuration class.
-        Tells Pydantic to load variables from a .env file.
-        """
-        env_file = ".env"
-        env_file_encoding = 'utf-8'
-        # This allows the model to be created even if .env is missing, for
-        # testing purposes. However, it will fail validation if required fields
-        # are not set by other means.
-        extra = 'ignore'
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 def load_config() -> Settings:
