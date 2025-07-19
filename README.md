@@ -64,3 +64,13 @@ Copy `.env.example` to `.env` and populate the following variables:
 
 The bot can run on a 2 vCPU/2 GB instance but heavy analysis modules may need to be scheduled less frequently or disabled when memory is limited.
 Optional components such as the `WeightOptimizer` or the experimental `CorrelationEngine` consume additional CPU and RAM.  Users on very small servers can comment them out in `src/main.py` to reduce load.
+
+On a server with 64 GB of RAM the Postgres settings can be increased significantly. A starting point is `POSTGRES_SHARED_BUFFERS=2GB`, `POSTGRES_WORK_MEM=64MB` and `POSTGRES_MAX_CONNECTIONS=100` in the `.env` file.
+
+## Risk disclaimer
+
+This project is experimental software for cryptocurrency trading. Trading digital assets is inherently risky and may lead to financial loss. Use the bot at your own risk and do not trade with funds you cannot afford to lose.
+
+## License
+
+GemVPS is released under the MIT License. See the [LICENSE](LICENSE) file for details.
